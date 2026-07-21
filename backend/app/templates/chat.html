@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="es">
+<head><meta charset="utf-8"><title>Amanda</title></head>
+<body>
+  <h1>BOT DE CHAT</h1>
+
+  {% for m in history %}
+    <p><b>{{ m.role }}:</b> {{ m.content }}</p>
+  {% endfor %}
+
+  <form method="POST" action="/chat">
+    <input type="text" name="message" autofocus required>
+    <button type="submit">Enviar</button>
+  </form>
+</body>
+</html>
