@@ -1,0 +1,14 @@
+<!doctype html>
+<html>
+    <head>
+      {% if title %}
+      <title>{{ title }} - Representante de Reservaciones</title>
+      {% else %}
+      <title>Bienvenido a Reservaciones</title>
+      {% endif %}
+    </head>
+    <body>
+    
+        {% block content %}{% endblock %}
+    </body>
+</html>

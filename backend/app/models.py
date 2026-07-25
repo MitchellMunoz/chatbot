@@ -1,12 +1,14 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date
 from uuid import UUID, uuid4
 from app.database import Base
 from pydantic import BaseModel
 from sqlalchemy import JSON, ForeignKey, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
-
+#TWO UPDATES NEEDED.
+# 1) PRICE IS HARD CODED, UPDATE DB TO DO THAT
+# 2) Quote is hard coded pulling year 2026. change in 2027
 def datetime_utcnow():
     return datetime.now(timezone.utc)
 
@@ -15,7 +17,7 @@ class ChatRequest(BaseModel):
     conversation_id: str | None = None
     message: str
 
-
+#convention [table name is lower clase and plural form of the entity] [class name is Singular form in Camel case]
 class Conversation(Base):
     __tablename__ = "conversations"
     id: Mapped[UUID] = mapped_column(default=uuid4, primary_key=True)
@@ -41,3 +43,92 @@ class Message(Base):
     def __repr__(self):
         return f'Message({self.id}, "{self.conversation_id}", "{self.role}", "{self.message}, "{self.timestamp}"")'
 
+class Combination(Base):
+    __tablename__ = "combinaciones"
+    id: Mapped[int] = mapped_column(primary_key=True) #441, this
+    hotel: Mapped[int]
+    priority: Mapped[int]=mapped_column("prioridad")
+    active:Mapped[int]=mapped_column("activo")
+    adults: Mapped[int] = mapped_column("adultos")
+    children: Mapped[int] = mapped_column("ninos")
+    total: Mapped[int]
+
+    details: Mapped[list["Detail"]] = relationship(back_populates="combination")
+    
+    def __repr__(self):
+        return f'Combination(id={self.id}, hotel={self.hotel}, adults={self.adults}, children={self.children}, priority={self.priority}, total={self.total})'
+
+class Detail(Base):
+    __tablename__ = "detalle_combinaciones"
+    id: Mapped[int] = mapped_column(primary_key=True) 
+    combination_id: Mapped[int] = mapped_column("combinacion_id", ForeignKey("combinaciones.id"))#440, #441, uses PK of Combinations 
+    unit_id: Mapped[int] = mapped_column("tipo_unid_id", ForeignKey("tipo_unid.id"))
+    quantity: Mapped[int] = mapped_column("cantidad")
+
+    combination: Mapped["Combination"] = relationship(back_populates="details")
+    unit: Mapped["Unit"] = relationship(back_populates="details")
+
+    def __repr__(self):
+        return f'Detail(id={self.id}, combinacion_id={self.combination_id}, tipo_unid_id={self.unit_id}, quantity={self.quantity})'
+
+
+
+class Unit(Base):
+    __tablename__ = "tipo_unid"
+    id: Mapped[int] = mapped_column(primary_key=True) #1,3,4,5 #units pk, b1br
+    code: Mapped[str] = mapped_column("unidad")
+    hotel: Mapped[int]
+    room: Mapped[str] = mapped_column("nombre") #nombre Bungalo de 4
+
+    details: Mapped[list["Detail"]] = relationship(back_populates="unit")
+    allotments: Mapped[list["Allotment"]] = relationship(back_populates="units")
+
+    def __repr__(self):
+        return f'Unit({self.id}, "{self.code}", "{self.hotel}", "{self.room}")'
+
+class Allotment(Base):
+    __tablename__ = "allotment"
+    allotment_id: Mapped[int] = mapped_column("corr", primary_key=True)
+    hotel: Mapped[int] = mapped_column("HOTEL") 
+    code: Mapped[str] = mapped_column("unidad", ForeignKey("tipo_unid.unidad"))
+    check_in: Mapped[date] =mapped_column("ent  ra")
+    check_out: Mapped[date] =mapped_column("sale")
+    estado: Mapped[str] = mapped_column("estado")
+    membership_number: Mapped[str] = mapped_column("JUNTO")
+    name: Mapped[str] = mapped_column("NOMBRE")
+
+    units: Mapped[list["Unit"]] = relationship(back_populates="allotments")
+
+    def __repr__(self):
+        return f'Allotment({self.allotment_id}, "{self.hotel}", "{self.code}",  "{self.check_in}",  "{self.check_out}",  "{self.estado}",  "{self.membership_number}",  "{self.name}")'
+
+class ExchangeRate(Base):
+    __tablename__ = "tasa"
+    id:Mapped[int] = mapped_column(primary_key=True)
+    today:Mapped[date] = mapped_column("fecha")
+    rate:Mapped[float] = mapped_column("tasa")
+
+    def __repr__(self):
+        return f'Rate({self.id}, "{self.date}", "{self.rate}")'
+
+class Destination(Base):
+    __tablename__ = "destino"
+    id:Mapped[int] = mapped_column("corr", primary_key=True)
+    points: Mapped[float] = mapped_column("NUMPUN")#MULTIPLY BY 4.5
+    hotel_name: Mapped[str] = mapped_column("LUGARUSO")#SOLEIL LA ANTIGUA OR SOLEIL PACIFICO
+    hotel: Mapped[int] = mapped_column("CVELUG") #1 or 2
+    code: Mapped[str] = mapped_column("CVEUNI")
+    year: Mapped[int] = mapped_column("DESTINO") #FIRST 4 DIGITS MATCH YEAR 2026
+    season: Mapped[str] = mapped_column("FINENTRE")#FIN, ENTRE, SUP_AL
+   
+
+
+
+class SeasonCalendar(Base):
+    id:Mapped[int] = mapped_column("corr", primary_key=True)
+    __tablename__ = "tarifa_hotel2"
+    season: Mapped[str] = mapped_column("temporada") #ENTRE SEMANA, FIN DE SEMANA, SUPER ALTA, BUT WILL BE FIN, ENTRE, SUP_AL
+    calendar: Mapped[date] = mapped_column("FECHA")
+
+
+    #LUGARUSO = SOLEIL ANTIGUA 

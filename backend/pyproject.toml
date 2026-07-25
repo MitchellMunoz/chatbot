@@ -15,6 +15,7 @@ dependencies = [
     "psycopg>=3.3.4",
     "psycopg2-binary>=2.9.12",
     "pymysql>=1.2.0",
+    "pytailwindcss>=0.2.0",
     "ruff>=0.15.22",
     "sqlalchemy>=2.0.51",
 ]
