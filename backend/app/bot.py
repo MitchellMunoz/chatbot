@@ -8,7 +8,7 @@ load_dotenv()
 
 System_Prompt = Path("app/prompt.md").read_text()
 
-MODEL = "claude-sonnet-4-5"
+MODEL = "claude-opus-5"
 
 MAX_TOOL_ITERATIONS = 8
 
@@ -39,7 +39,7 @@ class ChatBot:
                 answer = "\n".join(text_parts).strip()
                 if answer:
                     return answer
-                return "No response"
+                return "Permítame trasladarlo con otro agente."
 
             messages.append({"role": "assistant", "content": response.content})
 

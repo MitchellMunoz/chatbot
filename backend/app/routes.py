@@ -18,11 +18,12 @@ def chat():
         queries.create_conversation(conversation_id)
 
     if request.method == "POST":
-        message = request.form["message"]              # <-- form field, not JSON
-        queries.save_message(conversation_id, "user", message)
-        history = queries.load_history(conversation_id)
-        result = amanda.generate_response(history, max_tokens=1000)
-        queries.save_message(conversation_id, "assistant", result)
+        message = request.form.get("message", "").strip()  # <-- form field, not JSON
+        if message:
+            queries.save_message(conversation_id, "user", message)
+            history = queries.load_history(conversation_id)
+            result = amanda.generate_response(history, max_tokens=1000)
+            queries.save_message(conversation_id, "assistant", result)
 
     history = queries.load_history(conversation_id)
     return render_template("chat.html", history=history)

@@ -1,16 +1,93 @@
 <!doctype html>
 <html lang="es">
-<head><meta charset="utf-8"><title>Amanda</title></head>
-<body>
-  <h1>BOT DE CHAT</h1>
+<head>
+  <meta charset="utf-8">
+  <title>Amanda</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100">
 
-  {% for m in history %}
-    <p><b>{{ m.role }}:</b> {{ m.content }}</p>
-  {% endfor %}
+  <div class="max-w-2xl mx-auto p-4">
+    <div class="bg-white rounded-2xl shadow-md p-6">
 
-  <form method="POST" action="/chat">
-    <input type="text" name="message" autofocus required>
-    <button type="submit">Enviar</button>
-  </form>
+      <h1 class="text-xl font-bold text-slate-800 mb-6">Agente de Reservaciones</h1>
+
+      <div id="message-list" class="space-y-3 mb-6">
+        {% for m in history %}
+          {% if m.role == "user" %}
+            <div class="flex justify-end">
+              <div class="bg-teal-600 text-white rounded-2xl px-4 py-2 max-w-md whitespace-pre-line break-words">{{ m.content }}</div>
+            </div>
+          {% else %}
+            <div class="flex justify-start">
+              <div class="bg-slate-100 text-slate-800 rounded-2xl px-4 py-2 max-w-md whitespace-pre-line break-words">{{ m.content }}</div>
+            </div>
+          {% endif %}
+        {% endfor %}
+
+        {% if not history %}
+          <p id="empty-state" class="text-slate-400 text-center py-8">Escribe un mensaje para empezar</p>
+        {% endif %}
+
+        <div id="typing-indicator" class="hidden flex justify-start">
+          <div class="bg-slate-100 text-slate-500 rounded-2xl px-4 py-2 max-w-md italic">Amanda está escribiendo...</div>
+        </div>
+      </div>
+
+      <form id="chat-form" method="POST" action="/chat" class="flex gap-2">
+        <input id="message-input" type="text" autofocus required
+               class="flex-1 border border-slate-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+        <input type="hidden" id="message-hidden" name="message">
+        <button id="send-button" type="submit"
+                class="bg-teal-600 text-white rounded-full px-5 py-2 hover:bg-teal-700">
+          Enviar
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+  <script>
+    const chatForm = document.getElementById("chat-form");
+    const messageInput = document.getElementById("message-input");
+    const messageHidden = document.getElementById("message-hidden");
+    const sendButton = document.getElementById("send-button");
+    const typingIndicator = document.getElementById("typing-indicator");
+    const messageList = document.getElementById("message-list");
+    const emptyState = document.getElementById("empty-state");
+
+    chatForm.addEventListener("submit", function (event) {
+      const messageText = messageInput.value.trim();
+
+      if (messageText === "") {
+        event.preventDefault();
+        return;
+      }
+
+      messageHidden.value = messageText;
+
+      if (emptyState) {
+        emptyState.classList.add("hidden");
+      }
+
+      const bubbleWrapper = document.createElement("div");
+      bubbleWrapper.className = "flex justify-end";
+
+      const bubble = document.createElement("div");
+      bubble.className = "bg-teal-600 text-white rounded-2xl px-4 py-2 max-w-md whitespace-pre-line break-words";
+      bubble.textContent = messageText;
+
+      bubbleWrapper.appendChild(bubble);
+      messageList.insertBefore(bubbleWrapper, typingIndicator);
+
+      typingIndicator.classList.remove("hidden");
+      typingIndicator.scrollIntoView({ behavior: "smooth", block: "end" });
+
+      messageInput.value = "";
+      messageInput.readOnly = true;
+      sendButton.disabled = true;
+    });
+  </script>
+
 </body>
 </html>

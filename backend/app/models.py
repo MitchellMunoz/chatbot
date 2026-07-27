@@ -6,9 +6,8 @@ from sqlalchemy import JSON, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
-#TWO UPDATES NEEDED.
+#UPDATE NEEDED.
 # 1) PRICE IS HARD CODED, UPDATE DB TO DO THAT
-# 2) Quote is hard coded pulling year 2026. change in 2027
 def datetime_utcnow():
     return datetime.now(timezone.utc)
 
@@ -66,45 +65,45 @@ class Detail(Base):
     quantity: Mapped[int] = mapped_column("cantidad")
 
     combination: Mapped["Combination"] = relationship(back_populates="details")
-    unit: Mapped["Unit"] = relationship(back_populates="details")
+    unit: Mapped["Unit_type"] = relationship(back_populates="details")
 
     def __repr__(self):
         return f'Detail(id={self.id}, combinacion_id={self.combination_id}, tipo_unid_id={self.unit_id}, quantity={self.quantity})'
 
 
 
-class Unit(Base):
+class Unit_type(Base):
     __tablename__ = "tipo_unid"
     id: Mapped[int] = mapped_column(primary_key=True) #1,3,4,5 #units pk, b1br
-    code: Mapped[str] = mapped_column("unidad")
-    hotel: Mapped[int]
-    room: Mapped[str] = mapped_column("nombre") #nombre Bungalo de 4
+    room_id: Mapped[str] = mapped_column("unidad") #D2DL
+    hotel_id: Mapped[int] = mapped_column("HOTEL")
+    room_name: Mapped[str] = mapped_column("nombre") #nombre Bungalo de 4
 
     details: Mapped[list["Detail"]] = relationship(back_populates="unit")
-    allotments: Mapped[list["Allotment"]] = relationship(back_populates="units")
+    allotments: Mapped[list["Allotment"]] = relationship(back_populates="unit")
 
     def __repr__(self):
-        return f'Unit({self.id}, "{self.code}", "{self.hotel}", "{self.room}")'
+        return f'Unit({self.hotel_id}, "{self.room_id}", "{self.room_name}")'
 
 class Allotment(Base):
     __tablename__ = "allotment"
     allotment_id: Mapped[int] = mapped_column("corr", primary_key=True)
-    hotel: Mapped[int] = mapped_column("HOTEL") 
-    code: Mapped[str] = mapped_column("unidad", ForeignKey("tipo_unid.unidad"))
-    check_in: Mapped[date] =mapped_column("ent  ra")
+    hotel_id: Mapped[int] = mapped_column("HOTEL") 
+    room_id: Mapped[str] = mapped_column("unidad", ForeignKey("tipo_unid.unidad"))
+    check_in: Mapped[date] =mapped_column("entra")
     check_out: Mapped[date] =mapped_column("sale")
     estado: Mapped[str] = mapped_column("estado")
     membership_number: Mapped[str] = mapped_column("JUNTO")
     name: Mapped[str] = mapped_column("NOMBRE")
 
-    units: Mapped[list["Unit"]] = relationship(back_populates="allotments")
+    unit: Mapped["Unit_type"] = relationship(back_populates="allotments")
 
     def __repr__(self):
-        return f'Allotment({self.allotment_id}, "{self.hotel}", "{self.code}",  "{self.check_in}",  "{self.check_out}",  "{self.estado}",  "{self.membership_number}",  "{self.name}")'
+        return f'Allotment({self.allotment_id}, "{self.hotel_id}", "{self.room_id}",  "{self.check_in}",  "{self.check_out}",  "{self.estado}",  "{self.membership_number}",  "{self.name}")'
 
 class ExchangeRate(Base):
     __tablename__ = "tasa"
-    id:Mapped[int] = mapped_column(primary_key=True)
+    id:Mapped[int] = mapped_column("corr", primary_key=True)
     today:Mapped[date] = mapped_column("fecha")
     rate:Mapped[float] = mapped_column("tasa")
 
@@ -116,12 +115,15 @@ class Destination(Base):
     id:Mapped[int] = mapped_column("corr", primary_key=True)
     points: Mapped[float] = mapped_column("NUMPUN")#MULTIPLY BY 4.5
     hotel_name: Mapped[str] = mapped_column("LUGARUSO")#SOLEIL LA ANTIGUA OR SOLEIL PACIFICO
-    hotel: Mapped[int] = mapped_column("CVELUG") #1 or 2
-    code: Mapped[str] = mapped_column("CVEUNI")
-    year: Mapped[int] = mapped_column("DESTINO") #FIRST 4 DIGITS MATCH YEAR 2026
-    season: Mapped[str] = mapped_column("FINENTRE")#FIN, ENTRE, SUP_AL
-   
+    hotel_id: Mapped[int] = mapped_column("CVELUG") #1 or 2
+    room_id: Mapped[str] = mapped_column("CVEUNI")
+    year:Mapped[int] = mapped_column("anocta")
+    day: Mapped[str] = mapped_column("FINENTRE")#FIN, ENTRE, SUP_AL
 
+    def __repr__(self):
+        return f'Destination({self.id}, "{self.points}", "{self.hotel_name}", "{self.hotel_id}", "{self.room_id}", "{self.year}", "{self.season}")'
+
+#add visible web 
 
 
 class SeasonCalendar(Base):
@@ -129,6 +131,3 @@ class SeasonCalendar(Base):
     __tablename__ = "tarifa_hotel2"
     season: Mapped[str] = mapped_column("temporada") #ENTRE SEMANA, FIN DE SEMANA, SUPER ALTA, BUT WILL BE FIN, ENTRE, SUP_AL
     calendar: Mapped[date] = mapped_column("FECHA")
-
-
-    #LUGARUSO = SOLEIL ANTIGUA 
