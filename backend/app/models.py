@@ -127,7 +127,25 @@ class Destination(Base):
 
 
 class SeasonCalendar(Base):
-    id:Mapped[int] = mapped_column("corr", primary_key=True)
+    id: Mapped[int] = mapped_column("corr", primary_key=True)
     __tablename__ = "tarifa_hotel2"
     season: Mapped[str] = mapped_column("temporada") #ENTRE SEMANA, FIN DE SEMANA, SUPER ALTA, BUT WILL BE FIN, ENTRE, SUP_AL
-    calendar: Mapped[date] = mapped_column("FECHA")
+    calendar: Mapped[date] = mapped_column("fecha")
+
+
+class Pasante(Base):
+    __tablename__ = "pasante"
+    id: Mapped[int] = mapped_column("corr", primary_key=True)
+    membership_number: Mapped[str] = mapped_column("junto")
+    available_points: Mapped[int] = mapped_column("puntos_disponibles")
+
+
+
+# call actualizarCuenta("110001");
+# SELECT
+# 	*
+# FROM
+# 	pasante
+# WHERE
+# 	junto = "110001";
+# puntos_disponiblesSELECT DISTINCT * FROM pasante;

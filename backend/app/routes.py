@@ -3,7 +3,7 @@ from app import app
 from app.bot import amanda
 from app.models import ChatRequest, Conversation, Message
 from app import queries
-from flask import request, render_template, session
+from flask import request, render_template, session, redirect
 from uuid import uuid4
 
 
@@ -27,3 +27,9 @@ def chat():
 
     history = queries.load_history(conversation_id)
     return render_template("chat.html", history=history)
+
+
+@app.route("/chat/borrar", methods=["POST"])
+def borrar_chat():
+    session.pop("conversation_id", None)
+    return redirect("/chat")

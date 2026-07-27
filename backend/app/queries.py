@@ -1,9 +1,9 @@
 from uuid import UUID
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.orm import Session
 from datetime import date 
 from app.database import PgSession, MySQLSession
-from app.models import Conversation, Message, Combination, Detail, Unit_type, Allotment, Destination, SeasonCalendar, ExchangeRate
+from app.models import Conversation, Message, Combination, Detail, Unit_type, Allotment, Destination, SeasonCalendar, ExchangeRate, Pasante
 
 
 from datetime import datetime, timedelta
@@ -29,6 +29,7 @@ HOTEL_ID_TO_NAME = {
 
 BOOKABLE_ROOM_IDS = ["D2DL", "V1BR", "V2BR", "B1BR", "B2BR", "D2JSE", "STE", "STL"]
 
+
 #Find out if the day is a weekend
 #Monday is 0
 def get_hotel_name(room_id):
@@ -53,7 +54,7 @@ def is_friday_or_saturday(check_in_out):
         return False
 
 
-def get_points(hotel_id, room_id, year):
+def get_room_points(hotel_id, room_id, year):
 
     with MySQLSession() as session:
         query = (
@@ -105,7 +106,7 @@ def points_for_one_night(one_night, points_by_day):
 def get_quote(hotel_id, room_id, check_in, check_out):
     with MySQLSession() as session:
         exchange_rate = get_exchange_rate(session)
-        points = get_points(hotel_id, room_id, check_in.year)
+        points = get_room_points(hotel_id, room_id, check_in.year)
         room_name = points["room"]
         points_by_day = points["points_by_day"]
 
@@ -327,3 +328,30 @@ def get_bookable_hotels_and_rooms():
                 "room_name": room_name,
             })
         return catalog
+
+
+def is_member(contract):
+    with MySQLSession() as session:
+        query = (select (Pasante.membership_number)
+        .where(Pasante.membership_number == contract)
+        )
+        result = session.scalar(query)
+        if result is None:
+            return False
+        else:
+            return True
+
+def get_member_points(membership_number):
+    with MySQLSession() as session:
+        session.execute(
+            text("CALL actualizarCuenta(:membership_number)"),
+            {"membership_number": membership_number},
+        )
+        session.commit()
+
+        query = (
+            select(Pasante.available_points)
+            .where(Pasante.membership_number == membership_number)
+        )
+        available_points = session.scalar(query)
+        return available_points

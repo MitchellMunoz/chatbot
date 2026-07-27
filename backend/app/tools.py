@@ -1,6 +1,6 @@
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
-from app.queries import get_room_combinations, check_availability, get_quote, get_bookable_hotels_and_rooms, get_next_available_dates
+from app.queries import get_room_combinations, check_availability, get_quote, get_bookable_hotels_and_rooms, get_next_available_dates, is_member
 try:
     from zoneinfo import ZoneInfo
 
@@ -31,6 +31,24 @@ def write_error_log(tool_name, tool_input, error_message):
 
 
 TOOLS = [
+    {
+        "name": "is_member",
+        "description": (
+            "Check whether a membership number is real, by looking it up in the live members database right now. "
+            "Call this as soon as the member gives you their membership number, before checking availability, before quoting, and before preparing any reservation request. "
+            "The result is true when the membership number exists and false when it does not. If it is false, tell the member the number was not found, ask them to confirm it, and do not continue with the reservation."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "contract": {
+                    "type": "string",
+                    "description": "The membership number exactly as the member gave it, with no characters added or removed. Most are 6 digits, for example '110001'. Many also end in a single letter, almost always P or R, for example '110026P' or '120009R'. Keep that letter and keep it uppercase. Do not pad with zeros, do not strip a letter, and do not reformat the number.",
+                },
+            },
+            "required": ["contract"],
+        },
+    },
     {
         "name": "list_hotels_and_rooms",
         "description": (
@@ -161,6 +179,10 @@ TOOLS = [
 
 def run_tool(name, tool_input):
     try:
+        if name == "is_member":
+            contract = tool_input["contract"]
+            member_found = is_member(contract)
+            return{"is_member": member_found}
         if name == "list_hotels_and_rooms":
             catalog = get_bookable_hotels_and_rooms()
             return {"hotels_and_rooms": catalog}
