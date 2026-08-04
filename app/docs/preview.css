@@ -1,0 +1,233 @@
+/*
+ * Stylesheet for the VS Code markdown preview.
+ * Wired up by "markdown.styles" in .vscode/settings.json.
+ *
+ * Forces a white page in every VS Code theme, because the default preview
+ * inherits the editor background and a dark ground makes a table-heavy
+ * reference doc unreadable.
+ */
+
+:root {
+  --paper: #ffffff;
+  --ink: #16181d;
+  --ink-soft: #555c69;
+  --ink-faint: #8a919e;
+  --rule: #e3e6eb;
+  --rule-soft: #f1f3f6;
+  --pg: #22537f;
+  --my: #8a5312;
+  --danger: #a12b2b;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --serif: Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;
+}
+
+/* ---------- ground ---------- */
+/* the theme classes are needed to beat VS Code's own body rule */
+
+body,
+body.vscode-light,
+body.vscode-dark,
+body.vscode-high-contrast,
+body.vscode-high-contrast-light {
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 16.5px;
+  line-height: 1.62;
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 3rem clamp(1.25rem, 5vw, 4rem) 8rem;
+}
+
+/* ---------- headings ---------- */
+/* mono, because in this document every heading is an identifier */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--mono);
+  color: var(--ink);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+  margin: 0;
+}
+
+h1 {
+  font-size: 2.1rem;
+  line-height: 1.15;
+  padding-bottom: 1.1rem;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: 1.5rem;
+}
+
+h2 {
+  font-size: 1.4rem;
+  margin-top: 3.5rem;
+  margin-bottom: 0.5rem;
+  padding-top: 0;
+  border: 0;
+}
+
+h3 {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-top: 2.25rem;
+  margin-bottom: 0.7rem;
+}
+
+/* ---------- prose ---------- */
+
+p, li {
+  max-width: 72ch;
+}
+
+p {
+  margin: 0 0 1rem;
+}
+
+strong { color: var(--ink); font-weight: 700; }
+em { color: var(--ink-soft); }
+
+a {
+  color: var(--pg);
+  text-decoration: none;
+  border-bottom: 1px solid var(--rule);
+}
+a:hover, a:focus-visible { border-bottom-color: var(--pg); }
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--rule);
+  margin: 2.5rem 0;
+}
+
+ul, ol {
+  margin: 0 0 1rem;
+  padding-left: 1.4rem;
+}
+li { margin-bottom: 0.2rem; }
+
+/* the Contents list reads as an index, not prose */
+h2#contents + ul {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  list-style: none;
+  padding-left: 0;
+}
+h2#contents + ul li { margin-bottom: 0.3rem; }
+
+/* ---------- code ---------- */
+
+code {
+  font-family: var(--mono);
+  font-size: 0.855em;
+  font-variant-ligatures: none;
+  background: var(--rule-soft);
+  color: var(--ink);
+  padding: 0.1em 0.34em;
+  border-radius: 2px;
+}
+
+pre {
+  background: var(--rule-soft) !important;
+  border-left: 3px solid var(--rule);
+  border-radius: 0;
+  padding: 1rem 1.1rem;
+  margin: 0 0 1.35rem;
+  overflow-x: auto;
+  line-height: 1.55;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.8rem;
+  color: var(--ink);
+}
+
+/* VS Code colours code-block tokens from the editor theme. Under a dark theme
+   those are pastels that vanish on white, so flatten them to ink. */
+pre code span { color: var(--ink) !important; }
+
+/* ---------- tables ---------- */
+/* this document is mostly tables, so they get the most attention */
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  max-width: none;
+  margin: 0 0 1.6rem;
+  font-family: var(--mono);
+  font-size: 0.795rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.45;
+  display: table;
+  border-top: 1.5px solid var(--ink);
+  border-bottom: 1.5px solid var(--ink);
+}
+
+thead th {
+  background: none;
+  text-align: left;
+  font-weight: 700;
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  padding: 0.55rem 0.85rem;
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  white-space: nowrap;
+}
+
+tbody td {
+  padding: 0.5rem 0.85rem;
+  border: 0;
+  border-bottom: 1px solid var(--rule-soft);
+  vertical-align: top;
+}
+
+tbody tr { background: none !important; }
+tbody tr:last-child td { border-bottom: 0; }
+tbody tr:hover td { background: #fafbfc; }
+
+/* row shape is: table | column | type | key | note */
+
+/* the table name repeats down the column, so keep it quiet */
+tbody td:first-child code {
+  background: none;
+  padding: 0;
+  color: var(--ink-faint);
+}
+
+/* the column name is what you scan for */
+tbody td:nth-child(2) code {
+  background: none;
+  padding: 0;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* datatype amber, keys blue */
+tbody td:nth-child(3) code { background: none; padding: 0; color: var(--my); }
+tbody td:nth-child(4) code { background: none; padding: 0; color: var(--pg); font-weight: 700; }
+
+/* the note column is prose, not data */
+tbody td:last-child {
+  font-family: var(--serif);
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  min-width: 18ch;
+}
+tbody td:last-child strong { color: var(--ink); }
+
+/* ---------- print ---------- */
+
+@media print {
+  body { padding: 0; max-width: none; font-size: 11pt; }
+  h2 { break-after: avoid-page; }
+  table { break-inside: auto; }
+  tbody tr:hover td { background: none; }
+}

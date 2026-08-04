@@ -9,10 +9,5 @@ wheels/
 # Virtual environments
 .venv
 
-# Environment / secrets
-.env
-*.env
-!*.env.example
-
 # Tool failure logs (may contain guest booking details)
-backend/app/errors/*.log
+app/errors/*.log

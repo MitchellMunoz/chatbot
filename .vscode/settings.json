@@ -1,5 +1,6 @@
 {
-  "python.defaultInterpreterPath": "/home/ubuntu/chatbot/backend/.venv/bin/python",
+  "python.defaultInterpreterPath": "/home/ubuntu/chatbot/.venv/bin/python",
+  "markdown.styles": ["app/docs/preview.css"],
   "files.exclude": {
     "**/__pycache__": true,
     "**/.vscode": true,

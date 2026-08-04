@@ -1,8 +1,0 @@
-{
-  "python.defaultInterpreterPath": "/home/ubuntu/chatbot/backend/.venv/bin/python",
-  "files.exclude": {
-    "**/__pycache__": true,
-    "**/.vscode": true,
-    "**/.python-version": true
-  }
-}

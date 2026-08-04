@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<div class="container mx-auto p-6">
+  <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-md">
+    <table class="w-full border-collapse bg-white text-left text-sm text-gray-500">
+
+      <thead class="bg-gray-50 text-xs uppercase text-gray-700 font-semibold tracking-wider">
+        <tr>
+          <th scope="col" class="px-6 py-4">Contract number</th>
+          <th scope="col" class="px-6 py-4">Status</th>
+
+        </tr>
+      </thead>
+ <tbody class="divide-y divide-gray-200 border-t border-gray-200">
+        {% for row in rows %}
+        <tr class="hover:bg-gray-50 transition-colors">
+          <!-- Column 1 Data -->
+          <td class="px-6 py-4 font-medium text-gray-900">
+            {{ row[0] }}
+          </td>
+          <td class="px-6 py-4 font-medium text-gray-900">
+            {{ row[1] }}
+          </td>
+                {% endfor %}
+      </tbody>
+   </table>
+  </div>
+</div>
+{% endblock %}
